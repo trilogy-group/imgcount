@@ -34,12 +34,12 @@ This project uses `uv` for dependency management.
 
 ## Usage
 
-Run the evaluation CLI using `uv run`:
+Run the evaluation CLI using `uv run`. Images are saved to the `output/` directory.
 
 ### Direct Generation Mode
 Generate an image and analyze it once.
 ```bash
-uv run python main.py --prompt "3 apples" --count 3 --mode direct --generator gemini --analyzer qwen
+uv run python main.py --prompt "3 apples on a table" --count 3 --object "apples" --mode direct --generator gemini --analyzer qwen
 ```
 
 ### Loop Mode (Auto-Correction)
@@ -57,6 +57,7 @@ uv run python main.py --prompt "5 cats" --count 5 --mode loop --generator openai
 | | Recraft V3 (via Fal) | `fal` |
 | **Editor** | GPT Image 1 | `openai` |
 | | Recraft V3 (via Fal) | `fal` |
+| | *Gemini Editor* | *(Coming Soon)* |
 | **Analyzer** | Qwen3 VL 235B (OpenRouter) | `qwen` |
 | | Gemini 3 Pro | `gemini` |
 
