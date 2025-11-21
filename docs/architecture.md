@@ -9,7 +9,7 @@ Abstract base class for models that generate images from text prompts.
 *   `generate(prompt: str) -> ImageResult`
 
 **Implementations**:
-*   `GeminiGenerator`: Uses `gemini-2.5-flash-image`.
+*   `GeminiGenerator`: Uses `gemini-3-pro-image-preview`.
 *   `OpenAIGenerator`: Uses `gpt-image-1`.
 *   `FalGenerator`: Uses `fal-ai/recraft-v3`.
 
@@ -20,7 +20,7 @@ Abstract base class for models that edit existing images based on a prompt.
 **Implementations**:
 *   `OpenAIEditor`: Uses `gpt-image-1` (Edit).
 *   `FalEditor`: Uses `fal-ai/recraft-v3` (Edit).
-*   `GeminiEditor`: Placeholder for `gemini-2.5-flash-image` (if supported).
+*   `GeminiEditor`: Placeholder for `gemini-3-pro-image-preview` (if supported).
 
 ### ImageAnalyzer
 Abstract base class for VLMs that analyze images and return an object count.

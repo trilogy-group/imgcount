@@ -18,16 +18,19 @@ class EvaluationLoop:
         self.editor = editor
         self.max_retries = max_retries
 
-    def run(self, prompt: str, target_count: int, mode: str = "direct"):
-        logger.info(f"Starting evaluation with mode={mode}, target_count={target_count}")
+    def run(self, prompt: str, target_count: int, mode: str = "direct", object_name: Optional[str] = None):
+        logger.info(f"Starting evaluation with mode={mode}, target_count={target_count}, object_name={object_name}")
         
+        target_object = object_name if object_name else prompt.split()[-1]
+
         # Step 1: Generate
         logger.info("Generating initial image...")
         result = self.generator.generate(prompt)
         logger.info(f"Image generated at {result.image_path}")
         
         # Step 2: Analyze
-        count = self.analyzer.analyze(result.image_path, f"Count the number of {prompt.split()[-1]} in this image. Return only the number.")
+        count_prompt = f"Count the number of {target_object} in this image. Return a JSON object with a single key 'count' and the integer value."
+        count = self.analyzer.analyze(result.image_path, count_prompt)
         logger.info(f"Analysis result: {count}")
         
         if mode == "direct":
@@ -52,16 +55,20 @@ class EvaluationLoop:
             logger.info(f"Count mismatch ({count} != {target_count}). Attempting edit {retries + 1}/{self.max_retries}...")
             
             # Construct edit prompt
-            edit_prompt = f"Make sure there are exactly {target_count} {prompt.split()[-1]} in the image."
+            edit_prompt = f"Make sure there are exactly {target_count} {target_object} in the image."
             
-            edit_result = self.editor.edit(current_image_path, edit_prompt)
-            current_image_path = edit_result.image_path
-            
-            count = self.analyzer.analyze(current_image_path, f"Count the number of {prompt.split()[-1]} in this image. Return only the number.")
-            logger.info(f"Analysis after edit: {count}")
-            
-            steps.append({"action": "edit", "count": count})
-            retries += 1
+            try:
+                edit_result = self.editor.edit(current_image_path, edit_prompt)
+                current_image_path = edit_result.image_path
+                
+                count = self.analyzer.analyze(current_image_path, count_prompt)
+                logger.info(f"Analysis after edit: {count}")
+                
+                steps.append({"action": "edit", "count": count})
+                retries += 1
+            except Exception as e:
+                logger.error(f"Edit failed: {e}")
+                break
             
         return {
             "image_path": current_image_path,

@@ -3,7 +3,7 @@ name = "imgcount"
 version = "0.1.0"
 description = "Generate and analyze images with counted number of objects."
 readme = "README.md"
-requires-python = ">=3.14"
+requires-python = ">=3.12"
 dependencies = [
     "fal-client>=0.9.1",
     "google-genai>=1.51.0",
