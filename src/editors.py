@@ -17,13 +17,13 @@ class GeminiEditor(ImageEditor):
         # Currently Gemini API primarily supports generation. 
         # We might need to use a specific endpoint or wait for support.
         # For now, we will raise NotImplementedError or try to use a generation with image input if supported.
-        # Assuming 'gemini-2.5-flash-image' might support image-to-image or we use a different approach.
+        # Assuming 'gemini-3-pro-image-preview' might support image-to-image or we use a different approach.
         
         # Reading the image
         with open(image_path, "rb") as f:
             image_bytes = f.read()
             
-        # TODO: Check actual Gemini Edit API support for gemini-2.5-flash-image. 
+        # TODO: Check actual Gemini Edit API support for gemini-3-pro-image-preview. 
         # For now, returning a dummy result to allow flow testing if needed, 
         # or raising error.
         raise NotImplementedError("Gemini Editing not yet fully implemented/verified.")

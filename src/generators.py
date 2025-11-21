@@ -15,7 +15,7 @@ class GeminiGenerator(ImageGenerator):
     def generate(self, prompt: str) -> ImageResult:
         try:
             response = self.client.models.generate_content(
-                model='gemini-2.5-flash-image',
+                model='gemini-3-pro-image-preview',
                 contents=[prompt],
                 config=types.GenerateContentConfig(
                     response_modalities=["IMAGE"]
@@ -46,7 +46,7 @@ class GeminiGenerator(ImageGenerator):
             if not image_saved:
                  raise ValueError("No image part found in Gemini response")
             
-            return ImageResult(image_path=image_path, metadata={"model": "gemini-2.5-flash-image"})
+            return ImageResult(image_path=image_path, metadata={"model": "gemini-3-pro-image-preview"})
         except Exception as e:
             # Fallback logic or detailed error
             raise RuntimeError(f"Gemini generation failed: {e}")
