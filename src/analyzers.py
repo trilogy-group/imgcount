@@ -12,7 +12,7 @@ class QwenAnalyzer(ImageAnalyzer):
             base_url="https://openrouter.ai/api/v1",
             api_key=os.environ.get("OPENROUTER_API_KEY"),
         )
-        self.model = "qwen/qwen3-vl-235b-a22b-instruct"
+        self.model = "qwen/qwen3-vl-235b"
 
     def analyze(self, image_path: str, prompt: str) -> int:
         try:

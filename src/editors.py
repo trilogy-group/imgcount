@@ -34,33 +34,32 @@ class OpenAIEditor(ImageEditor):
 
     def edit(self, image_path: str, prompt: str) -> ImageResult:
         try:
-            # OpenAI Edit uses GPT Image 1
             response = self.client.images.edit(
                 model="gpt-image-1",
                 image=open(image_path, "rb"),
                 prompt=prompt,
                 n=1,
                 size="1024x1024",
-                # response_format="b64_json"
+                response_format="b64_json",
             )
-            
-            if hasattr(response.data[0], 'b64_json') and response.data[0].b64_json:
+
+            if hasattr(response.data[0], "b64_json") and response.data[0].b64_json:
                 image_data = base64.b64decode(response.data[0].b64_json)
-            elif hasattr(response.data[0], 'url') and response.data[0].url:
+            elif hasattr(response.data[0], "url") and response.data[0].url:
                 image_data = requests.get(response.data[0].url).content
             else:
-                 raise ValueError("No image data found in response")
-                 
+                raise ValueError("No image data found in response")
+
             new_image_path = get_output_path(f"edited_openai_{os.path.basename(image_path).split('.')[0]}")
             with open(new_image_path, "wb") as f:
                 f.write(image_data)
-                
+
             return ImageResult(image_path=new_image_path, metadata={"model": "gpt-image-1"})
         except Exception as e:
             raise RuntimeError(f"OpenAI edit failed: {e}")
 
 class FalEditor(ImageEditor):
-    def __init__(self, model_id: str = "fal-ai/recraft-v3"):
+    def __init__(self, model_id: str = "fal-ai/flux-2-pro/edit"):
         self.model_id = model_id
 
     def edit(self, image_path: str, prompt: str) -> ImageResult:
