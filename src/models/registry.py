@@ -26,7 +26,7 @@ class ModelConfig:
 MODEL_REGISTRY: dict[str, ModelConfig] = {
     # Generators
     "gemini": ModelConfig(
-        name="Gemini 3 Pro Image",
+        name="Gemini 3 Pro Image Preview",
         provider="google",
         api_model_string="gemini-3-pro-image-preview",
         capabilities=[ModelCapability.GENERATE, ModelCapability.EDIT],
@@ -37,15 +37,8 @@ MODEL_REGISTRY: dict[str, ModelConfig] = {
         provider="openai",
         api_model_string="gpt-image-1",
         capabilities=[ModelCapability.GENERATE, ModelCapability.EDIT, ModelCapability.INPAINT],
-        max_resolution=(1792, 1792),
+        max_resolution=(4096, 4096),
         supports_mask=True,
-    ),
-    "recraft": ModelConfig(
-        name="Recraft V3.5",
-        provider="fal",
-        api_model_string="recraft-v3.5",
-        capabilities=[ModelCapability.GENERATE, ModelCapability.EDIT],
-        max_resolution=(2048, 2048),
     ),
     "flux": ModelConfig(
         name="FLUX.2 Pro",
@@ -54,51 +47,35 @@ MODEL_REGISTRY: dict[str, ModelConfig] = {
         capabilities=[ModelCapability.GENERATE],
         max_resolution=(2048, 2048),
     ),
-    "flux-pro-edit": ModelConfig(
+    "flux-edit": ModelConfig(
         name="FLUX.2 Pro Edit",
         provider="fal",
         api_model_string="fal-ai/flux-2-pro/edit",
         capabilities=[ModelCapability.EDIT],
         max_resolution=(2048, 2048),
-        supports_mask=True,
     ),
-    "flux-fill": ModelConfig(
-        name="FLUX.2 Fill",
+    "recraft": ModelConfig(
+        name="Recraft V3",
         provider="fal",
-        api_model_string="fal-ai/flux-2-fill",
-        capabilities=[ModelCapability.INPAINT],
+        api_model_string="fal-ai/recraft/v3/text-to-image",
+        capabilities=[ModelCapability.GENERATE],
         max_resolution=(2048, 2048),
-        supports_mask=True,
     ),
-    "ideogram": ModelConfig(
-        name="Ideogram V3",
-        provider="ideogram",
-        api_model_string="ideogram-v3",
-        capabilities=[ModelCapability.GENERATE],
-        max_resolution=(1536, 1536),
-    ),
-    "sd35": ModelConfig(
-        name="Stable Diffusion 3.5 Large",
-        provider="stability",
-        api_model_string="sd-3.5-large",
-        capabilities=[ModelCapability.GENERATE],
+    "recraft-edit": ModelConfig(
+        name="Recraft V3 Edit",
+        provider="fal",
+        api_model_string="fal-ai/recraft/v3/image-to-image",
+        capabilities=[ModelCapability.EDIT],
         max_resolution=(2048, 2048),
     ),
 
-    # Analyzers
-    "qwen": ModelConfig(
-        name="Qwen3 VL 235B",
-        provider="openrouter",
-        api_model_string="qwen/qwen3-vl-235b",
+    # Analyzers (VLMs)
+    "claude": ModelConfig(
+        name="Claude 4.5 Opus",
+        provider="anthropic",
+        api_model_string="claude-opus-4-5",
         capabilities=[ModelCapability.ANALYZE],
-        max_resolution=(4096, 4096),
-    ),
-    "gemini-analyzer": ModelConfig(
-        name="Gemini 3 Pro",
-        provider="google",
-        api_model_string="gemini-3-pro",
-        capabilities=[ModelCapability.ANALYZE],
-        max_resolution=(4096, 4096),
+        max_resolution=(8192, 8192),
     ),
     "gpt5": ModelConfig(
         name="GPT-5.1",
@@ -107,17 +84,17 @@ MODEL_REGISTRY: dict[str, ModelConfig] = {
         capabilities=[ModelCapability.ANALYZE],
         max_resolution=(4096, 4096),
     ),
-    "claude": ModelConfig(
-        name="Claude 4.5 Opus",
-        provider="anthropic",
-        api_model_string="claude-opus-4-5-20251101",
+    "gemini-vlm": ModelConfig(
+        name="Gemini 3 Pro Preview",
+        provider="google",
+        api_model_string="gemini-3-pro-preview",
         capabilities=[ModelCapability.ANALYZE],
-        max_resolution=(8192, 8192),
+        max_resolution=(4096, 4096),
     ),
-    "llama4": ModelConfig(
-        name="Llama 4 Maverick",
+    "qwen": ModelConfig(
+        name="Qwen3 VL 235B",
         provider="openrouter",
-        api_model_string="meta-llama/llama-4-maverick",
+        api_model_string="qwen/qwen3-vl-235b-a22b-instruct",
         capabilities=[ModelCapability.ANALYZE],
         max_resolution=(4096, 4096),
     ),

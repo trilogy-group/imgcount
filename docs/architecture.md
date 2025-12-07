@@ -11,7 +11,7 @@ Abstract base class for models that generate images from text prompts.
 **Implementations**:
 *   `GeminiGenerator`: Uses `gemini-3-pro-image-preview`.
 *   `OpenAIGenerator`: Uses `gpt-image-1`.
-*   `FalGenerator`: Uses `fal-ai/recraft-v3`.
+*   `FalGenerator`: Uses `fal-ai/flux-2-pro` by default.
 
 ### ImageEditor
 Abstract base class for models that edit existing images based on a prompt.
@@ -19,7 +19,7 @@ Abstract base class for models that edit existing images based on a prompt.
 
 **Implementations**:
 *   `OpenAIEditor`: Uses `gpt-image-1` (Edit).
-*   `FalEditor`: Uses `fal-ai/recraft-v3` (Edit).
+*   `FalEditor`: Uses `fal-ai/flux-2-pro/edit` by default (configurable to `fal-ai/recraft/v3/image-to-image`).
 *   `GeminiEditor`: Placeholder for `gemini-3-pro-image-preview` (if supported).
 
 ### ImageAnalyzer
@@ -28,7 +28,7 @@ Abstract base class for VLMs that analyze images and return an object count.
 
 **Implementations**:
 *   `QwenAnalyzer`: Uses `qwen/qwen3-vl-235b-a22b-instruct` via OpenRouter.
-*   `GeminiAnalyzer`: Uses `gemini-3-pro`.
+*   `GeminiAnalyzer`: Uses `gemini-3-pro-preview`.
 
 ### EvaluationLoop
 The orchestrator class in `src/evaluator.py`.

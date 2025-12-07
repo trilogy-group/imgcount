@@ -43,8 +43,8 @@ Update all model integrations to use current SOTA versions.
 |---------|---------|----------|-------|
 | Gemini 2.5 Flash Image | `gemini-3-pro-image-preview` | Google AI | Native image generation |
 | GPT Image 1 | `gpt-image-1` | OpenAI | Latest DALL-E backend |
-| Recraft V3 | `recraft-v3.5` | Fal.ai | Check fal.ai for exact model string |
-| - | `flux-2-pro` | Fal.ai / Replicate | Add FLUX.2 support |
+| Recraft V3 | `fal-ai/recraft/v3/text-to-image` | Fal.ai | Text-to-image generation |
+| - | `fal-ai/flux-2-pro` | Fal.ai / Replicate | Add FLUX.2 support |
 | - | `ideogram-v3` | Ideogram API | Add Ideogram support |
 | - | `sd-3.5-large` | Stability AI | Add SD 3.5 support |
 
@@ -53,19 +53,17 @@ Update all model integrations to use current SOTA versions.
 | Current | Updated | Provider | Notes |
 |---------|---------|----------|-------|
 | GPT Image 1 (edit) | `gpt-image-1` | OpenAI | Image editing endpoint |
-| Recraft V3 (edit) | `recraft-v3.5` | Fal.ai | Inpainting support |
-| - | `flux-2-pro/edit` | Fal.ai / Replicate | Add FLUX.2 edit support |
-| - | `flux-2-fill` | Fal.ai / Replicate | Add FLUX.2 inpainting |
+| Recraft V3 (edit) | `fal-ai/recraft/v3/image-to-image` | Fal.ai | Image-to-image editing |
+| - | `fal-ai/flux-2-pro/edit` | Fal.ai / Replicate | Add FLUX.2 edit support |
 
 #### 1.3 Analyzer Models (VLMs)
 
 | Current | Updated | Provider | Notes |
 |---------|---------|----------|-------|
-| Qwen3 VL 235B | `qwen3-vl-235b` | OpenRouter | Keep current |
-| Gemini 3 Pro | `gemini-3-pro` | Google AI | Vision capabilities |
+| Qwen3 VL 235B | `qwen/qwen3-vl-235b-a22b-instruct` | OpenRouter | Keep current |
+| Gemini 3 Pro | `gemini-3-pro-preview` | Google AI | Vision capabilities |
 | - | `gpt-5.1` | OpenAI | Add GPT-5.1 vision |
-| - | `claude-4.5-opus` | Anthropic | Add Claude 4.5 Opus |
-| - | `llama-4-maverick` | OpenRouter | Add Llama 4 |
+| - | `claude-opus-4-5` | Anthropic | Add Claude 4.5 Opus |
 
 #### 1.4 Implementation Requirements
 
@@ -98,7 +96,7 @@ class ModelConfig:
 MODEL_REGISTRY: dict[str, ModelConfig] = {
     # Generators
     "gemini": ModelConfig(
-        name="Gemini 3 Pro Image",
+        name="Gemini 3 Pro Image Preview",
         provider="google",
         api_model_string="gemini-3-pro-image-preview",
         capabilities=[ModelCapability.GENERATE, ModelCapability.EDIT],
@@ -109,7 +107,7 @@ MODEL_REGISTRY: dict[str, ModelConfig] = {
         provider="openai",
         api_model_string="gpt-image-1",
         capabilities=[ModelCapability.GENERATE, ModelCapability.EDIT, ModelCapability.INPAINT],
-        max_resolution=(1792, 1792),
+        max_resolution=(4096, 4096),
         supports_mask=True,
     ),
     "flux": ModelConfig(
@@ -119,31 +117,35 @@ MODEL_REGISTRY: dict[str, ModelConfig] = {
         capabilities=[ModelCapability.GENERATE],
         max_resolution=(2048, 2048),
     ),
-    "flux-pro-edit": ModelConfig(
+    "flux-edit": ModelConfig(
         name="FLUX.2 Pro Edit",
         provider="fal",
         api_model_string="fal-ai/flux-2-pro/edit",
         capabilities=[ModelCapability.EDIT],
         max_resolution=(2048, 2048),
-        supports_mask=True,
     ),
-    "flux-fill": ModelConfig(
-        name="FLUX.2 Fill",
+    "recraft": ModelConfig(
+        name="Recraft V3",
         provider="fal",
-        api_model_string="fal-ai/flux-2-fill",
-        capabilities=[ModelCapability.INPAINT],
+        api_model_string="fal-ai/recraft/v3/text-to-image",
+        capabilities=[ModelCapability.GENERATE],
         max_resolution=(2048, 2048),
-        supports_mask=True,
     ),
-    # ... continue for all models
+    "recraft-edit": ModelConfig(
+        name="Recraft V3 Edit",
+        provider="fal",
+        api_model_string="fal-ai/recraft/v3/image-to-image",
+        capabilities=[ModelCapability.EDIT],
+        max_resolution=(2048, 2048),
+    ),
     
-    # Analyzers
-    "qwen": ModelConfig(
-        name="Qwen3 VL 235B",
-        provider="openrouter",
-        api_model_string="qwen/qwen3-vl-235b",
+    # Analyzers (VLMs)
+    "claude": ModelConfig(
+        name="Claude 4.5 Opus",
+        provider="anthropic",
+        api_model_string="claude-opus-4-5",
         capabilities=[ModelCapability.ANALYZE],
-        max_resolution=(4096, 4096),
+        max_resolution=(8192, 8192),
     ),
     "gpt5": ModelConfig(
         name="GPT-5.1",
@@ -152,12 +154,19 @@ MODEL_REGISTRY: dict[str, ModelConfig] = {
         capabilities=[ModelCapability.ANALYZE],
         max_resolution=(4096, 4096),
     ),
-    "claude": ModelConfig(
-        name="Claude 4.5 Opus",
-        provider="anthropic",
-        api_model_string="claude-opus-4-5-20251101",
+    "gemini-vlm": ModelConfig(
+        name="Gemini 3 Pro Preview",
+        provider="google",
+        api_model_string="gemini-3-pro-preview",
         capabilities=[ModelCapability.ANALYZE],
-        max_resolution=(8192, 8192),
+        max_resolution=(4096, 4096),
+    ),
+    "qwen": ModelConfig(
+        name="Qwen3 VL 235B",
+        provider="openrouter",
+        api_model_string="qwen/qwen3-vl-235b-a22b-instruct",
+        capabilities=[ModelCapability.ANALYZE],
+        max_resolution=(4096, 4096),
     ),
 }
 ```
@@ -692,7 +701,7 @@ class ClaudeAnalyzer(BaseAnalyzer):
     """Analyzer using Claude 4.5 Opus."""
     
     def __init__(self):
-        super().__init__("claude-4.5-opus")
+        super().__init__("claude-opus-4-5")
         self.client = anthropic.Anthropic()
     
     async def analyze(
@@ -707,7 +716,7 @@ class ClaudeAnalyzer(BaseAnalyzer):
         mime_type = self._get_mime_type(image_path)
         
         message = self.client.messages.create(
-            model="claude-opus-4-5-20251101",
+            model="claude-opus-4-5",
             max_tokens=1024,
             system=COUNTING_SYSTEM_PROMPT,
             messages=[
@@ -954,8 +963,8 @@ Add support for targeted corrections and new models.
 src/editors/
 ├── __init__.py
 ├── base.py              # Abstract base class
-├── openai.py            # GPT Image 2 editor
-├── flux.py              # FLUX.2 Fill editor
+├── openai.py            # GPT Image 1 editor
+├── flux.py              # FLUX.2 Pro Edit editor
 ├── strategies.py        # Correction strategies
 └── prompt_refinement.py # LLM-powered prompt improvement
 ```
@@ -1117,7 +1126,7 @@ class PromptRefiner:
                 history += f"{i}. Prompt: \"{attempt['prompt']}\" → Got {attempt['count']} (wanted {target_count})\n"
         
         message = self.client.messages.create(
-            model="claude-opus-4-5-20251101",
+            model="claude-opus-4-5",
             max_tokens=512,
             messages=[
                 {
@@ -1528,7 +1537,7 @@ EXPERIMENT_PRESETS: Dict[str, ExperimentConfig] = {
         experiment_type=ExperimentType.BASELINE,
         baseline=BaselineConfig(
             generators=["gemini", "openai", "flux", "ideogram", "sd35"],
-            analyzers=["claude", "gpt5", "gemini", "qwen"],
+            analyzers=["claude", "gpt5", "gemini-vlm", "qwen"],
             dataset_path="data/benchmark_v1.json",
             samples_per_prompt=5,
         ),
@@ -1538,7 +1547,7 @@ EXPERIMENT_PRESETS: Dict[str, ExperimentConfig] = {
         name="vlm_reliability",
         experiment_type=ExperimentType.VLM_RELIABILITY,
         vlm_reliability=VLMReliabilityConfig(
-            analyzers=["claude", "gpt5", "gemini", "qwen", "llama4"],
+            analyzers=["claude", "gpt5", "gemini-vlm", "qwen"],
             ground_truth_path="data/human_annotations.json",
             images_dir="data/generated_images",
         ),
@@ -1921,9 +1930,9 @@ def main():
     gen_parser.add_argument("--generator", default="gemini", 
                            choices=["gemini", "openai", "flux", "ideogram", "sd35", "recraft"])
     gen_parser.add_argument("--editor", default="openai",
-                           choices=["openai", "flux", "recraft"])
+                           choices=["openai", "flux-edit", "recraft-edit"])
     gen_parser.add_argument("--analyzer", default="claude",
-                           choices=["claude", "gpt5", "gemini", "qwen", "llama4", "ensemble"])
+                           choices=["claude", "gpt5", "gemini-vlm", "qwen", "ensemble"])
     gen_parser.add_argument("--max-iterations", type=int, default=3)
     gen_parser.add_argument("--output-dir", default="output")
     
@@ -1939,7 +1948,7 @@ def main():
     analyze_parser.add_argument("--image", required=True, help="Image path or directory")
     analyze_parser.add_argument("--object", required=True, help="Object type to count")
     analyze_parser.add_argument("--analyzer", default="ensemble",
-                               choices=["claude", "gpt5", "gemini", "qwen", "llama4", "ensemble"])
+                               choices=["claude", "gpt5", "gemini-vlm", "qwen", "ensemble"])
     analyze_parser.add_argument("--output", help="Output JSON path")
     
     # Dataset command (new)
@@ -2231,7 +2240,7 @@ testpaths = ["tests"]
 # Google AI (Gemini)
 GEMINI_API_KEY=your_gemini_api_key
 
-# OpenAI (GPT-5.1, GPT Image 2)
+# OpenAI (GPT-5.1, GPT Image 1)
 OPENAI_API_KEY=your_openai_api_key
 
 # Anthropic (Claude 4.5 Opus)

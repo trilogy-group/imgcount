@@ -12,7 +12,7 @@ class QwenAnalyzer(ImageAnalyzer):
             base_url="https://openrouter.ai/api/v1",
             api_key=os.environ.get("OPENROUTER_API_KEY"),
         )
-        self.model = "qwen/qwen3-vl-235b"
+        self.model = "qwen/qwen3-vl-235b-a22b-instruct"
 
     def analyze(self, image_path: str, prompt: str) -> int:
         try:
@@ -73,7 +73,7 @@ class GeminiAnalyzer(ImageAnalyzer):
                 image_bytes = f.read()
                 
             response = self.client.models.generate_content(
-                model='gemini-3-pro', # Updated to Gemini 3 Pro
+                model='gemini-3-pro-preview',  # Gemini 3 Pro Preview
                 contents=[prompt, types.Part.from_bytes(data=image_bytes, mime_type="image/png")]
             )
             
