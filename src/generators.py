@@ -1,25 +1,38 @@
 import os
 import base64
+from typing import TYPE_CHECKING
 import requests
 from .models import ImageGenerator, ImageResult
-from google import genai
-from google.genai import types
 from openai import OpenAI
 import fal_client
 from .utils import get_output_path
 
+if TYPE_CHECKING:
+    from google import genai as genai_module
+
 class GeminiGenerator(ImageGenerator):
     def __init__(self):
-        self.client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"), http_options={'api_version': 'v1beta'})
+        try:
+            from google import genai as genai_module
+        except ImportError as exc:
+            raise RuntimeError(
+                "google-genai is required for GeminiGenerator. Install with `uv add google-genai`."
+            ) from exc
+
+        self._genai = genai_module
+        self.client = self._genai.Client(
+            api_key=os.environ.get("GEMINI_API_KEY"),
+            http_options={"api_version": "v1beta"},
+        )
 
     def generate(self, prompt: str) -> ImageResult:
         try:
             response = self.client.models.generate_content(
                 model="gemini-3-pro-image-preview",
                 contents=[prompt],
-                config=types.GenerateContentConfig(
+                config=self._genai.types.GenerateContentConfig(
                     response_modalities=["IMAGE"]
-                )
+                ),
             )
 
             image_path = get_output_path("generated_gemini")
